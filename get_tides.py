@@ -1,39 +1,19 @@
 from selenium import webdriver
 from bs4 import BeautifulSoup
+from location.state import State
+from location.harbor import Harbor
 
-
-def get_state_abbrev(state_name):
-  ocean_states = {'alabama': 'AL', 'alaska': 'AK', 'california': 'CA',
-  'connecticut': 'CT', 'delaware': 'DE', 'florida': 'FL', 'georgia': 'GA',
-  'hawaii': 'HI', 'louisiana': 'LA', 'maine': 'ME', 'maryland': 'MD',
-  'massachusetts': 'MA', 'mississippi': 'MS', 'new hampshire': 'NH',
-  'new jersey': 'NJ', 'new york': 'NY', 'north carolina': 'NC',
-  'oregon': 'OR', 'rhode island': 'RI', 'south carolina': 'SC',
-  'texas': 'TX','vermont': 'VT', 'virginia': 'VA', 'washington': 'WA'}
-
-  state = state_name.lower()
-  if state in ocean_states.keys():
-    return ocean_states[state]
-  else:
-    return ''
-
+## Helper functions
 def get_search_url():
   # Get user input
-  state = input("US State: ").lower()
-  harbor = input("Harbor: ").lower()
-
-  # Clean up user input
-  if 'harbor' not in harbor:
-    harbor += " harbor"
-
-  while len(state) != 2:
-    state = get_state_abbrev(state)
-    if state  == '':
-      state = input("Please enter a valid US state bordering the ocean: ").lower()
+  state = State(input("US State: "))
+  while state.abbrev is None:
+      state = State(input("Please enter a valid US state bordering the ocean: "))
+  harbor = Harbor(input("Harbor: "))
 
   # Generate url
-  harbor_location = (harbor.replace(' ', '-') + '-' + state)
-  return 'https://www.usharbors.com/harbor/' + state + '/' + harbor_location + '/tides#monthly-tide-chart'
+  harbor_location = harbor.name + '-' + state.abbrev
+  return 'https://www.usharbors.com/harbor/' + state.abbrev + '/' + harbor_location + '/tides#monthly-tide-chart'
 
 def get_tide_table(search_url):
   driver = webdriver.Chrome()
@@ -50,11 +30,7 @@ def get_tide_table(search_url):
     return soup.find("table", {"class": "tides"})
   
 
-# Execution
-# For testing:
-# bad_url = 'https://www.usharbors.com/harbor/pa/newark-harbor-pa/tides#monthly-tide-chart'
-# good_url = 'https://www.usharbors.com/harbor/maine/york-harbor-me/tides/'
-
+## Main Execution
 url = get_search_url()
 tide_table = get_tide_table(url)
 
