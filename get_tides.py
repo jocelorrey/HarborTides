@@ -1,10 +1,13 @@
+import webbrowser
 from bs4 import BeautifulSoup
 from datetime import date
+from flask import Flask, render_template
 from location.state import State
 from location.harbor import Harbor
 from utilities.scraper import Scraper
 from utilities.parser import TableParser
 
+app = Flask(__name__)
 
 
 ## Helper functions
@@ -61,15 +64,22 @@ today = date.today().strftime("%d")
 result = daily_tides[today]
 [high_am, high_pm, low_am, low_pm, sunrise, sunset] = result
 
-print("Today's high tides:", set_AM(high_am), set_PM(high_pm))
 
+# URL: http://localhost:5000/tides
+@app.route('/tides')
+def show_tides():
+  return render_template('index.html', highAM = set_AM(high_am), highPM = set_PM(high_pm), lowAM = set_AM(low_am), lowPM = set_PM(low_pm))
+
+if __name__ == '__main__':
+  webbrowser.open('http://localhost:5000/tides')
+  app.run()
 """
 Useful Resources:
 1. Tutorial: https://www.edureka.co/blog/web-scraping-with-python/
 2. Beautiful Soup Docs: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
 3. Beautiful Soup - Find Table: https://stackoverflow.com/questions/33766740/beautifulsoup-find-table-with-specified-class-on-wikipedia-page
 4. Beautiful Soup - Parsing Table: https://pythonprogramming.net/tables-xml-scraping-parsing-beautiful-soup-tutorial/
-5. ASCII Waves: https://ascii.co.uk/art/wave
+5. Flask: https://www.digitalocean.com/community/tutorials/how-to-make-a-web-application-using-flask-in-python-3
 
 Tide Table Row Format:
 ['1', 'Thu', '5:22', '8.0', '6:03', '7.9', '11:35', '0.4', '', '', '5:01', '8:28', '', '1', 'Thu']

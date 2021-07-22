@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    <title>Tidal Data</title>
+</head>
+<body>
+   <h1>Today's Tides</h1>
+   <p>High tides: {{ highAM }} and {{ highPM }}</p>
+   <p>Low tides: {{ lowAM }} and {{ lowPM }}</p>
+</body>
+</html>
